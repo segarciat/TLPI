@@ -40,19 +40,24 @@ main(int argc, char *argv[])
 	if (outputFd == -1)
 		syscallError("opening output file");
 
+	/* Save end-of-file position for EOF checks */
+	ssize_t eofPos;
+	if ((eofPos = lseek(inputFd, 0, SEEK_END)) == -1 || lseek(inputFd, 0, SEEK_SET) == -1)
+		syscallError("lseek input file");
+
 	/* Transfer data until we encounter EOF or error */
 	char buf[BUF_SIZE];
 	ssize_t numRead;
 	while ((numRead = read(inputFd, buf, BUF_SIZE)) >= 0)
 		if (numRead == 0) {
 			/* Determine if hole or if reached EOF */
-			off_t curPos, eofPos;
-			if ((curPos = lseek(inputFd, 0, SEEK_CUR)) == -1 || (eofPos = lseek(inputFd, 0, SEEK_END)) == -1)
+			off_t curPos = lseek(inputFd, 0, SEEK_CUR);
+			if (curPos == -1)
 				syscallError("lseek input file");
-			if (curPos == eofPos)
+			else if (curPos == eofPos)
 				break;
 			/* Seek past end to introduce hole in output file, and reset input file position */
-			else if (lseek(outputFd, 1, SEEK_END) == -1 || lseek(inputFd, curPos, SEEK_SET) == -1)
+			else if (lseek(outputFd, 1, SEEK_END) == -1) 
 				syscallError("lseek output file");
 		} /* Write to output file */
 		else if (write(outputFd, buf, numRead) != numRead)
