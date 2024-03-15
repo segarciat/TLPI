@@ -5,14 +5,14 @@ by Michael Kerrisk. See [the book website here](https://man7.org/tlpi/).
 
 ## TLPI Soure Code
 
-The [source code is available through the book site](https://man7.org/tlpi/code/index.html)
-, provided on the website as a compressed tarball:
+The [source code is available through the book site](https://man7.org/tlpi/code/index.html),
+provided on the website as a compressed tarbowl:
 
 ```bash
-# Download the tarball for Distributed Version (see website)
+# Download the tarbowl for Distributed Version (see website)
 wget https://man7.org/tlpi/code/download/tlpi-240109-dist.tar.gz
 
-# Decompress and extract tarball in current directory
+# Decompress and extract tarbowl in current directory
 tar -xvz -f tlpi-240109-dist.tar.gz 
 ```
 
@@ -24,17 +24,20 @@ after installing the necessary packages (explained in `BUILDING`), one can run
 cd tlpi-dist
 # Read README and BUILDING files to learn what packages must be installed.
 
+# For example, it says we need libcap-dev, among others.
+sudo apt install libcap-dev
+
 # Build tlpi-dist/lib and all examples.
 make
 ```
 
 ## Using the TLPI Lib
 
-The book explains that the examples throughout the book use a library consisting of functions
-for error handling and utilities for reaidng integers from stdin. The single header `tlpi_hdr.h"`
-contains all that is necessary. Sometimes it is helpful for exercises to reuse this library,
-and we can do so by linking against the library built in the prior step by using a `makefile`
-in the directory of interest:
+The book explains that the examples throughout the it use a homegrown library, consisting of functions
+for error handling and utilities for reading integers from stdin. The single header `"tlpi_hdr.h"`
+contains all that is necessary. Sometimes, it is helpful for exercises to reuse this library,
+and we can do so by linking against the library (which was built in the prior step), and then using a
+`makefile` in the directory of interest. Below is a template `makefile` that I use throughout exercises:
 
 ```make
 P=prog_name
