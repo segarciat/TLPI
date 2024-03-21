@@ -5,6 +5,7 @@
 #include <ctype.h> /* isdigit */
 #include <sys/types.h> /* pid_t */
 #include <stdbool.h> /* true */
+#include "process.h"
 
 #define PROCESS_NAME_HEADER "Name:"
 #define PPID_NAME_HEADER "PPid:"
@@ -32,6 +33,36 @@ getPPid(const char *line)
 	return ppid;
 }
 
+void
+addProcChildren(struct pnode *root, struct pnode *node)
+{
+	if (node != NULL) {
+		addProcChildren(root, node->left);
+		if (node->proc->pid != node->proc->ppid) {
+			struct pnode *parent = pnode_find(root, node->proc->ppid);
+			process_insert_child(parent->proc, node->proc);
+		}
+		addProcChildren(root, node->right);
+	}
+}
+
+void
+printProcessTree(struct process *proc, size_t spaces)
+{
+	if (proc != NULL) {
+		spaces += printf("%s(%d)", proc->cmd, proc->pid);
+		for (struct proclist *pl = proc->firstChild; pl != NULL; pl = pl->next) {
+			printf("->");
+			printProcessTree(pl->proc, spaces + 2); // two spaces for: ->
+			if (pl->next != NULL) {
+				printf("\n");
+				for (size_t i = 0; i < spaces; i++) // Add proper indent
+					putchar(' ');
+			}
+		}
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -39,6 +70,11 @@ main(int argc, char *argv[])
 	DIR *procdir = opendir("/proc");
 	if (procdir == NULL)
 		errExit("opendir");
+	/* Create node for init process with no parent */
+	struct pnode *root = pnode_new(process_new(0, "init", 0)); /* init is its own parent, so we will say it has PPid 0 */
+	if (root == NULL)
+		errExit("malloc");
+
 	/* Read all entries in the directory */
 	errno = 0;
 	char pidStatusFileName[BUFSIZ];
@@ -49,6 +85,7 @@ main(int argc, char *argv[])
 	for (struct dirent *direntp = readdir(procdir); direntp != NULL; errno = 0, direntp = readdir(procdir)) {
 		if (!isdigit(*direntp->d_name))
 			continue; /* Skip if it does not start with a digit, i.e., if it is not a PID directory */
+		pid_t pid = (pid_t) getLong(direntp->d_name, GN_GT_0, "pid");
 		if (snprintf(pidStatusFileName, BUFSIZ, "/proc/%s/status", direntp->d_name) < 0)
 			errExit("snprintf");
 
@@ -72,7 +109,9 @@ main(int argc, char *argv[])
 			errExit("fgets");
 		if (fclose(fp) != 0)
 			errExit("fclose");
-		printf("%s (%s) with PPid: %ld\n", command, direntp->d_name, (long) ppid);
+		root = pnode_insert(root, process_new(pid, command, ppid));
+		if (root == NULL)
+			fatal("pnode_insert");
 	}
 	/* Handle potential readdir error */
 	if (errno != 0) {
@@ -80,6 +119,10 @@ main(int argc, char *argv[])
 	}
 	if (closedir(procdir) == -1)
 		errExit("closeDir");
+	addProcChildren(root, root);
+	printProcessTree(root->proc, 0);
+	printf("\n");
+
 
 	exit(EXIT_SUCCESS);
 }
