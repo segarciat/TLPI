@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "tlpi_hdr.h"
+#include <stdio.h>
 
 #ifndef BUF_SIZE        /* Allow "cc -D" to override definition */
 #define BUF_SIZE 1024
@@ -35,11 +36,11 @@ main(int argc, char *argv[])
 
     /* Open input and output files */
 
-    inputFd = open(argv[1], O_RDONLY);
+    inputFd = open(argv[1], O_RDONLY | O_SYNC);
     if (inputFd == -1)
         errExit("opening file %s", argv[1]);
 
-    openFlags = O_CREAT | O_WRONLY | O_TRUNC;
+    openFlags = O_CREAT | O_WRONLY | O_TRUNC | O_SYNC;
     filePerms = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
                 S_IROTH | S_IWOTH;      /* rw-rw-rw- */
     outputFd = open(argv[2], openFlags, filePerms);
