@@ -3,7 +3,7 @@
 This directory consists of my self-study journey through the book *The Linux Programming Interface*
 by Michael Kerrisk. See [the book website here](https://man7.org/tlpi/).
 
-## TLPI Soure Code
+## TLPI Source Code
 
 The [source code is available through the book site](https://man7.org/tlpi/code/index.html),
 provided on the website as a compressed tarbowl:
@@ -26,6 +26,14 @@ cd tlpi-dist
 
 # For example, it says we need libcap-dev, among others.
 sudo apt install libcap-dev
+sudo apt install libacl1-dev
+sudo apt install libcrypt-dev
+sudo apt install libselinux1-dev
+sudo apt install libseccomp-dev
+
+# Install gcc and make
+sudo apt install gcc
+sudo apt install make
 
 # Build tlpi-dist/lib and all examples.
 make
