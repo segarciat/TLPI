@@ -50,6 +50,8 @@ main(int argc, char *argv[])
        is the (strongly) preferred API for this task. */
 	
 	struct sigaction sigAction;
+	if (sigemptyset(&sigAction.sa_mask) == -1)
+		errExit("sigemptyset");
 	sigAction.sa_handler = handler;
 	sigAction.sa_flags = 0;
 
