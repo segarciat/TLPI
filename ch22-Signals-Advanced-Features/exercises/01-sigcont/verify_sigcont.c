@@ -13,6 +13,7 @@ errAndExit(char *msg)
 static void
 sigcontHandler(int signal)
 {
+	/* UNSAFE: printf() is a non-async-signal-safe function */
 	printf("Handled SIGCONT\n");
 }
 
