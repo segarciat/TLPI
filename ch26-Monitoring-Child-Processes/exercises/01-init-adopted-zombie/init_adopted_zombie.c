@@ -40,15 +40,15 @@ main(int argc, char *argv[])
 			snprintf(parentPidFilename, PATH_MAX, "/proc/%ld/status", (long) newParent);
 			FILE *fp = fopen(parentPidFilename, "r");
 			if (fp == NULL)
-				error("Failed to parent proc file");
+				error("Failed to find parent proc file");
 			char line[BUFSIZ];
 			while (fgets(line, BUFSIZ, fp) != NULL) {
-				if (strstr(line, "Name") == NULL)
-					continue;
-				printf("Found! %s\n", line);
-				exit(EXIT_SUCCESS);
+				if (strstr(line, "Name") != NULL) {
+					printf("Found! %s\n", line);
+					exit(EXIT_SUCCESS);
+				}
 			}
-			if (line == NULL && !feof(fp))
+			if (!feof(fp))
 				error("Error reading parent process file");
 			printf("Failed to find parent");
 			exit(EXIT_FAILURE);

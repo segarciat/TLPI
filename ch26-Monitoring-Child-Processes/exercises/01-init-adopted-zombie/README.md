@@ -35,11 +35,9 @@ child wakes up, it displays its new parent's PID, which is 1853, not 1.
 
 The [TLPI errata](https://man7.org/tlpi/errata/index.html) explains the following:
 
-```
-Linux 3.4 added the `PR_SET_CHILD_SUBREAPER` `prctl()` operation, which allows a "service manager" process to mark itself as a sort of 'sub-init', so that it adopts all orphaned processes created by the services it starts. All `SIGCHLD` signals will be delivered to the service manager. There is a corresponding `PR_GET_CHILD_SUBREAPER` `prctl()` operation.
+>Linux 3.4 added the `PR_SET_CHILD_SUBREAPER` `prctl()` operation, which allows a "service manager" process to mark itself as a sort of 'sub-init', so that it adopts all orphaned processes created by the services it starts. All `SIGCHLD` signals will be delivered to the service manager. There is a corresponding `PR_GET_CHILD_SUBREAPER` `prctl()` operation.
 
-More recent *init* frameworks employ the `PR_SET_CHILD_SUBREAPER` feature to create a dedicated subreaper process that becomes the parent of all orphaned children. On such frameworks, which include `systemd` (dependent on start-up options) and (the now obsolete) upstart, `getppid()` will report the new parent PID as the PID of the subreaper process (i.e., a value other than 1) when a process becomes orphaned.
-```
+>More recent *init* frameworks employ the `PR_SET_CHILD_SUBREAPER` feature to create a dedicated subreaper process that becomes the parent of all orphaned children. On such frameworks, which include `systemd` (dependent on start-up options) and (the now obsolete) upstart, `getppid()` will report the new parent PID as the PID of the subreaper process (i.e., a value other than 1) when a process becomes orphaned.
 
 I proceeded to verify that this corresponding to the process ID for `systemd` by looking at the `/proc`
 file system. The output above shows that `systemd` is the the subreaper.
