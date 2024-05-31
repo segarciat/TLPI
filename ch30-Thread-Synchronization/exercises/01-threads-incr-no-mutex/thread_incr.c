@@ -1,3 +1,5 @@
+/* Modified by Sergio E. Garcia Tapia for Exercise 30.1 */
+
 /*************************************************************************\
 *                  Copyright (C) Michael Kerrisk, 2023.                   *
 *                                                                         *

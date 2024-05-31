@@ -60,3 +60,11 @@ $(P): $(OBJECTS)
 
 Be sure to update `prog_name`, and if necessary, `TLPI_LIB_PATH`. My default path assumes that
 an exercise file that uses it will be in a directory `TLPI/chxx-chaptername/xx-exercise-name/file.c`.
+
+## PThreads
+
+Notice that the Pthreads man pages come in a separate package:
+
+```bash
+sudo apt install manpages-posix-dev
+```
