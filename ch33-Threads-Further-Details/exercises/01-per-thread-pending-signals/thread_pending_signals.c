@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
 /* Display error message associated with errorNumber and exit */
 void
