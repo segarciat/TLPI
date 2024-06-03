@@ -1,0 +1,10 @@
+PID of parent process is:       22876
+Foreground process group ID is: 22876
+PID=23109 PGID=23109
+Parent: PID=22876 PGID=22876
+PID=23110 PGID=22876
+Suspending until all children have sent SIGRTMIN
+PID=23111 PGID=22876
+Parent raising SIGHUP
+PID 22876: caught signal  1 (Hangup)
+Parent continuing

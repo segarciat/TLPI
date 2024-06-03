@@ -1,0 +1,10 @@
+PID of parent process is:       8078
+Foreground process group ID is: 8078
+PID=14507 PGID=14507
+PID=8078 PGID=8078
+PID=14508 PGID=8078
+PID=14509 PGID=8078
+PID 14508: caught signal  1 (Hangup)
+PID 14509: caught signal  1 (Hangup)
+PID 14508: caught signal  1 (Hangup)
+PID 14509: caught signal  1 (Hangup)
