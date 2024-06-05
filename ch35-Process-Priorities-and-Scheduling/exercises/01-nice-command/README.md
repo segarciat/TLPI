@@ -35,5 +35,5 @@ DESCRIPTION
 ```
 
 To achieve this, I used the `setprioty()` system call to set the priority of my program, and then
-used `execve()` to run the program provided by the user. This works because, according to Section 35.1,
+used `execvp()` to run the program provided by the user. This works because, according to Section 35.1,
 the nice value is inherited by a child created via `fork()`, and preserved across an `exec()`.
