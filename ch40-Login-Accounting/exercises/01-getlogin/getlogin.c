@@ -3,6 +3,7 @@
 #include <unistd.h> /* ttyname(), STDIN_FILENO */
 #include <string.h> /* memset() */
 #include <errno.h> /* errno */
+#include "getlogin.h"
 
 char*
 getlogin_s(void)
