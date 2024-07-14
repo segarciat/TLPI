@@ -77,7 +77,7 @@ main(int argc, char *argv[])
 	/* Disable O_NONBLOCK on client FIFO descriptor to ensure read blocks */
 	if ((clientFdFlags = fcntl(clientFd, F_GETFL)) == -1)
 		errExit("failed to fetch client FIFO flags");
-	clientFdFlags |= ~O_NONBLOCK;
+	clientFdFlags &= ~O_NONBLOCK;
 	if (fcntl(clientFd, F_SETFL, clientFdFlags) == -1)
 		errExit("failed to disable O_NONBLOCK on client FIFO");
 	
