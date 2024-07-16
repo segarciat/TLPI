@@ -176,3 +176,12 @@ message of that type would match. It unblocks and receives the message as soon a
 on the queue that matches that. The type can be used in other ways. For example, a message type of `0`
 means we receive the first message available. A negative message type means we treat the message queue
 as a priority queue.
+
+Upon finsihing up, we can use *ipcrm -q <message_queue_id>* to delete the queues created:
+
+```bash
+ipcrm -q 0
+ipcrm -q 1
+ipcrm -q 2
+ipcrm -q 3
+```
