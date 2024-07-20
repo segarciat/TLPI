@@ -13,16 +13,16 @@ function opens the FIFO for both read (using `O_NONBLOCK`) and write, and then w
 to the pipe to ensure that the first attempt to reserve it with *reserveSem()* or *reserveSemNB()*
 is successful. From here I got stuck.
 
-My initial attempt was to write to open the named pipe twice, once for read and once for write.
+My initial attempt was to open the named pipe twice, once for read and once for write.
 Then I would write 1 byte to the pipe, and subsequently close both file descriptors. The *reserveSem()*
 operation would then block because there is no FIFO write file descriptor open. I then attempted
-to use `O_NONBLOCK` to allow opening anyway, and then used the `SETFL` operation of `fcntl()` to
-remove the `O_NONBLOCK` flag after opening. However, the *read()* call would then block, presumably
-because the byte written during initialization of the pipe as a semaphore was discarded once all
-file descriptors had been closed.
+to use `O_NONBLOCK` to allow opening anyway (for reading), and then used the `F_SETFL` operation of `fcntl()` to
+remove the `O_NONBLOCK` flag after opening. However, the *read()* call would then block anyway, presumably
+because the byte written during initialization of the pipe as a semaphore was discarded from the kernel
+buffer once all file descriptors had been closed.
 
 In my second attempt, I decided that these pipe descriptors should be kept open after *initSemAvailable()*.
-For this, I expected as a second argument a pointer to structure of type `struct sempipe`, which saved
+For this, I added a second argument to the function, a pointer to structure of type `struct sempipe`, which saved
 the two descriptors that were kept open. This had the following effects:
 
 1) In *reserveSem()*, I no longer needed to provide `O_NONBLOCK` when opening the FIFO for reading,
