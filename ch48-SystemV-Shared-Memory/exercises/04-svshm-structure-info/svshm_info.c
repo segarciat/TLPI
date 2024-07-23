@@ -80,8 +80,9 @@ main(int argc, char *argv[])
 	printf("Last dettached at %s", ctime(&ds.shm_dtime));
 	printf("\n");
 	printf("id           owner      perms        size            nattach\n");
+	/* Display only lower 9 bits of permission mask */
 	printf("%-12d %-10s %-12o %-15ld %-3ld\n",
-			(int) shmid, pw->pw_name, ds.shm_perm.mode, (long) ds.shm_segsz, (long) ds.shm_nattch);
+			(int) shmid, pw->pw_name, 0x1FF & ds.shm_perm.mode, (long) ds.shm_segsz, (long) ds.shm_nattch);
 	
 	exit(EXIT_SUCCESS);
 }

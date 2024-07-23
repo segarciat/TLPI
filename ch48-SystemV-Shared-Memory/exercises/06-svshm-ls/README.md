@@ -16,10 +16,10 @@ Sample output:
 ```
 Maximum Index: 62
 index    id           owner      perms        size            nattach
-4        4            sgarciat   1600         524288          2
-7        7            sgarciat   1600         524288          2
-24       24           sgarciat   1600         524288          2
-51       51           sgarciat   1600         524288          2
-52       52           sgarciat   1600         524288          2
-62       62           sgarciat   1600         524288          2
+4        4            sgarciat   600         524288          2
+7        7            sgarciat   600         524288          2
+24       24           sgarciat   600         524288          2
+51       51           sgarciat   600         524288          2
+52       52           sgarciat   600         524288          2
+62       62           sgarciat   600         524288          2
 ```

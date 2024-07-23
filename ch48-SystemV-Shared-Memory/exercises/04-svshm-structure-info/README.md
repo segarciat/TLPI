@@ -26,5 +26,5 @@ Last attached at Sun Jul 21 15:00:21 2024
 Last dettached at Sun Jul 21 15:00:21 2024
 
 id           owner      perms        size            nattach
-7            sgarciat   1600         524288          2
+7            sgarciat   600         524288          2
 ```

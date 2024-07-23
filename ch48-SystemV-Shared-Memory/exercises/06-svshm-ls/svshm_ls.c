@@ -51,8 +51,9 @@ main(int argc, char *argv[])
 		/* Get owner */
 		if ((pw = getpwuid(ds.shm_perm.uid)) == NULL)
 			unix_error("%s: Unable to retrieve owner of shared memory region", argv[0]);
+		/* Display only lower 9 bits of permission mask */
 		printf("%-8d %-12d %-10s %-12o %-15ld %-3ld\n",
-			idx, (int) shmid, pw->pw_name, ds.shm_perm.mode, (long) ds.shm_segsz, (long) ds.shm_nattch);
+			idx, (int) shmid, pw->pw_name, 0x1FF & ds.shm_perm.mode, (long) ds.shm_segsz, (long) ds.shm_nattch);
 	}
 	exit(EXIT_SUCCESS);
 }
