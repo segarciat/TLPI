@@ -40,76 +40,73 @@
 static void
 signalHandler(int sig)
 {
-	if (mq_unlink(SERVER_MQ) == -1)
-		_exit(EXIT_FAILURE);
+    if (mq_unlink(SERVER_MQ) == -1)
+        _exit(EXIT_FAILURE);
 
-	_exit(EXIT_SUCCESS);
+    _exit(EXIT_SUCCESS);
 }
 
 int
 main(int argc, char *argv[])
 {
-	/* Temporarily block SIGINT and SIGTERM */
-	sigset_t blockMask, prevMask;
-	sigemptyset(&blockMask);
-	sigaddset(&blockMask, SIGINT);
-	sigaddset(&blockMask, SIGTERM);
-	if (sigprocmask(SIG_BLOCK, &blockMask, &prevMask) == -1)
-		errExit("sigprocmask() - Failed to add SIGINT and SITERM to process signal mask");
+    /* Temporarily block SIGINT and SIGTERM */
+    sigset_t blockMask, prevMask;
+    sigemptyset(&blockMask);
+    sigaddset(&blockMask, SIGINT);
+    sigaddset(&blockMask, SIGTERM);
+    if (sigprocmask(SIG_BLOCK, &blockMask, &prevMask) == -1)
+        errExit("sigprocmask() - Failed to add SIGINT and SITERM to process signal mask");
 
 
-	/* Create signal handler to delete queue upon receipt of SIGINT and SIGTERM before exiting */
-	struct sigaction sa;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sa.sa_handler = signalHandler;
-	if (sigaction(SIGINT, &sa, NULL) == -1)
-		errExit("sigaction() - Failed to install SIGINT handler");
-	if (sigaction(SIGTERM, &sa, NULL) == -1)
-		errExit("sigaction() - Failed to install SIGTERM handler");
+    /* Create signal handler to delete queue upon receipt of SIGINT and SIGTERM before exiting */
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = signalHandler;
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+        errExit("sigaction() - Failed to install SIGINT handler");
+    if (sigaction(SIGTERM, &sa, NULL) == -1)
+        errExit("sigaction() - Failed to install SIGTERM handler");
     
     
-	/* Create well-known message queue, and open it for reading */
+    /* Create well-known message queue, and open it for reading */
     umask(0);                           /* So we get the permissions we want */
-	struct mq_attr srvMqAttr;
-	srvMqAttr.mq_maxmsg  = SERVER_MQ_MAXMSG;
-	srvMqAttr.mq_msgsize = SERVER_MQ_MSGSZ;
-	mqd_t mqd = mq_open(SERVER_MQ, O_RDONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IWGRP, &srvMqAttr);
-	if (mqd == -1)
-		errExit("mq_open() - Failed to create server message queue");
-	/* Unblock SIGINT and SIGTERM */
-	if (sigprocmask(SIG_SETMASK, &prevMask, NULL) == -1)
-		errExit("sigprocmask() - Failed to restore previous signal mask");
+    struct mq_attr srvMqAttr;
+    srvMqAttr.mq_maxmsg  = SERVER_MQ_MAXMSG;
+    srvMqAttr.mq_msgsize = SERVER_MQ_MSGSZ;
+    mqd_t mqd = mq_open(SERVER_MQ, O_RDONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IWGRP, &srvMqAttr);
+    if (mqd == (mqd_t) -1)
+        errExit("mq_open() - Failed to create server message queue");
 
-	char reqMsgBuf[SERVER_MQ_MSGSZ];
+    /* Unblock SIGINT and SIGTERM */
+    if (sigprocmask(SIG_SETMASK, &prevMask, NULL) == -1)
+        errExit("sigprocmask() - Failed to restore previous signal mask");
+
+    char reqMsgBuf[SERVER_MQ_MSGSZ];
     struct request req;
     struct response resp;
-	int seqNum = 0;                     /* This is our "service" */
+    int seqNum = 0;                     /* This is our "service" */
     for (;;) {                          /* Read requests and send responses */
-		ssize_t bytesRead = mq_receive(mqd, reqMsgBuf, SERVER_MQ_MSGSZ, NULL);
-		if (bytesRead == -1) {	/* Ignore failure */
-			fprintf(stderr, "mq_receive() - Error reading request; discarding: %s\n", strerror(errno));
-			continue;
-		}
-		if (bytesRead == 0)		/* Empty message */
-			continue;
-		memcpy(&req, reqMsgBuf, sizeof(struct request));
+        ssize_t bytesRead = mq_receive(mqd, reqMsgBuf, SERVER_MQ_MSGSZ, NULL);
+        if (bytesRead <= 0) {  /* Ignore failure */
+            if (bytesRead == -1)
+                errMsg("mq_receive() - Error reading request; discarding\n");
+            continue;
+        }
+        memcpy(&req, reqMsgBuf, sizeof(struct request));
 
         /* Open client POSIX message queue (previously created by client) */
-
-    	char clientMq[CLIENT_MQ_NAME_LEN];
-        snprintf(clientMq, CLIENT_MQ_NAME_LEN, CLIENT_MQ_TEMPLATE,
-                (long) req.pid);
+        char clientMq[CLIENT_MQ_NAME_LEN];
+        snprintf(clientMq, CLIENT_MQ_NAME_LEN, CLIENT_MQ_TEMPLATE, (long) req.pid);
         mqd_t clientFd = mq_open(clientMq, O_WRONLY);
-        if (clientFd == -1) {           /* Open failed, give up on client */
+        if (clientFd == (mqd_t) -1) {           /* Open failed, give up on client */
             errMsg("open %s", clientMq);
             continue;
         }
 
         /* Send response and close POSIX message queue */
-
         resp.seqNum = seqNum;
-		if (mq_send(clientFd, (char *) &resp, sizeof(struct response), 0) == -1)
+        if (mq_send(clientFd, (char *) &resp, sizeof(struct response), 0) == -1)
             fprintf(stderr, "Error writing to message queue %s\n", clientMq);
 
         if (mq_close(clientFd) == -1)

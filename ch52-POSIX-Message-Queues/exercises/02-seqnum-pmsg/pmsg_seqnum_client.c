@@ -47,41 +47,33 @@ main(int argc, char *argv[])
 
     /* Create our POSIX message queue (before sending request, to avoid a race) */
 
+
+	/* Create message queue */
     umask(0);                   /* So we get the permissions we want */
-
-	/* Build message queue name */
-    snprintf(clientMq, CLIENT_MQ_NAME_LEN, CLIENT_MQ_TEMPLATE,
-            (long) getpid());
-
-	/* Set message queue attributes */
+    snprintf(clientMq, CLIENT_MQ_NAME_LEN, CLIENT_MQ_TEMPLATE, (long) getpid());
 	struct mq_attr mqAttr = {
 		.mq_maxmsg  = CLIENT_MQ_MAXMSG,
 		.mq_msgsize = CLIENT_MQ_MSGSZ,
 	};
-
-	/* Create message queue and set to delete on exit */
 	mqd_t clientMqd = mq_open(clientMq, O_RDONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IWGRP, &mqAttr);
-	if (clientMqd == -1)
+	if (clientMqd == (mqd_t) -1)
         errExit("mq_open %s", clientMq);
 
     if (atexit(removeMq) != 0)
         errExit("atexit");
 
     /* Construct request message, open server message queue, and send message */
-
     struct request req = {
 		.pid = getpid(),
     	.seqLen = (argc > 1) ? getInt(argv[1], GN_GT_0, "seq-len") : 1,
 	};
-
 	mqd_t serverMqd = mq_open(SERVER_MQ, O_WRONLY);
-	if (serverMqd == -1)
+	if (serverMqd == (mqd_t) -1)
         errExit("mq_open %s", SERVER_MQ);
-
 	if (mq_send(serverMqd, (char *) &req, sizeof(struct request), 0) == -1)
         fatal("Can't write to server");
 
-    /* Read queue */
+    /* Read queue with server's response */
     struct response resp;
 	char respMsgBuf[CLIENT_MQ_MSGSZ];
 	if (mq_receive(clientMqd, respMsgBuf, CLIENT_MQ_MSGSZ, 0) == -1)

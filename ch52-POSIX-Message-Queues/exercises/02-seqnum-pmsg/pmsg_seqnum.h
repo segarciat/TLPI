@@ -18,9 +18,9 @@
 */
 
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <mqueue.h>
+#include <sys/stat.h>	/* umask() */
+#include <fcntl.h>		/* O_* flags */
+#include <mqueue.h>		/* mq_open(), mq_unlink(), mq_send(), mq_receive(), etc */
 #include "tlpi_hdr.h"
 
 #define SERVER_MQ "/seqnum_mq_srv"
