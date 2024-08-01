@@ -13,6 +13,11 @@ I also copied the source files from the other code listings in order to create t
 send messages to it from the command-line.
 
 ```bash
+# Compile programs
+make pmsg_create
+make pmsg_send
+make mq_notify_sig
+
 # Create message queue
 ./pmsg_create -cx /mq_notify_52_5
 

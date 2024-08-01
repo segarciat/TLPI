@@ -23,5 +23,6 @@ $(program):
 
 %: %.c
 	$(CC) $(ALL_CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
-pmsg_file_server:
-pmsg_file_client:
+mq_notify_sig:
+pmsg_create:
+pmsg_send:

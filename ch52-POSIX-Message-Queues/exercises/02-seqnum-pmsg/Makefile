@@ -17,7 +17,7 @@ CFLAGS = -g
 # Allows user to override CFLAGS
 ALL_CFLAGS = -I$(tlpi_hdr_include) -Wall -O1 -std=gnu11 $(CFLAGS)
 LDFLAGS = -L$(tlpi_lib_path)
-LDLIBS = -l:libtlpi.a
+LDLIBS = -l:libtlpi.a -lrt
 
 $(program):
 
