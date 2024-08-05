@@ -54,7 +54,9 @@ not fulfill the requirement that it should be only marked for deletion, and that
 occur when all processes have ceased using the semaphore. I did it this way for simplicity.
 On success, it also deletes the temporary file created during `psem_open()`.
 
-There may be other bugs that I may not have caught, and I've only done basic testing.
+There are other bugs and inefficiences. For example, the temporary file does not need to remain
+open while using the semaphore, and keeping it open only serves to reduce the number of available
+file descriptors (in essence it's a resource leak).
 
 Compile and run the program as follows.
 
