@@ -5,20 +5,21 @@ being used to lock two different files in two processes.
 
 ## Solution
 
-I designed a program where process begins by forking a child process.
+I designed a program in which a process begins by forking a child. I then used two unnamed
+POSIX semaphores to synchronize the actions of the two related process:
 
-1. The parent acquires an exclusive lock on file 1, lets the child process know that it can
-proceed. It then blocks waiting for the child to allow it to resume.
+1. The parent acquires an exclusive lock on file 1, then posts to the child's semaphore so
+that it may resume. The parent then waits on the child to post to its semaphore. 
 
-2. Similarly, the child acquires an exclusive lock on file 2, and blocks until the parent tells
-it to proceed before resuming.
+2. Similarly, the child acquires an exclusive lock on file 2, posts to the parent's semaphore,
+and waits for the parent to post to its semaphore.
 
-3. When notified by child, the parent attempts to lock file 2, blocking up to a timeout.
+3. When the parent acquires the semaphore, it attempts to lock file 2.
 
-4. The child does the same but for file 1.
-
-I used a pair of unnamed POSIX semaphores for synchronization of the related processes, 
-available to the related processes via a shared anonymous mapping.
+4. Similarly, when the child acquires the semaphore, it attempts to lock file 1. However,
+since I suspected that a deadlock may not be detected, I introduced a timeout by using
+the *alarm()* system call and handling the `SIGALRM` signal (whose default action would
+otherwise terminate the child process).
 
 Since the semantics of *flock()* are such that the lock is associated with the open file
 description rather than the i-node or the file descriptor (see page 1122), I was careful to
@@ -26,11 +27,16 @@ open the files to be locked *after* the *fork()*; if done before, the child woul
 a pair of file descriptors pointing to the same file description, and the two processes
 would share locks.
 
-I decided that if a deadlock situation was detected, then either call would fail immediately.
-Therefore, I decided to introduce a timeout of 5 seconds by using the *alarm()* system call.
-If after the timeout the child has not been able to acquire both locks, then I presume
-a deadlock has occurred, and cause the child to exit. At that point, the lock on file 2
-held by the child is released, allowing the parent process to acquire the lock.
+The timeout I introduced on the child was 5 seconsd. I decided that if the process did not
+terminate before the timeout, then a deadlock must have occurred. I confirmed my observation
+by running the program. No output was shown in stdout for 5 seconds, and at that point, the child
+outputs a message saying that *flock()* failed to due to `EINTR`. This means that the signal
+handler introduced for the `SIGALRM` signal interrupted *flock()* on the child while it blocked
+waiting for an exclusive lock on file 1. Given that there was no prior output from the parent
+either, I deduced a deadlock occurred.
+
+At that point, the child exits, and the lock on file 2 held by the child is released, allowing
+the parent process to acquire the lock.
 
 To compile and run:
 
