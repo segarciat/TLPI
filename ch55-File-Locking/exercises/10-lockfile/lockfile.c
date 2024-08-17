@@ -115,8 +115,10 @@ main(int argc, char* argv[])
             errorExit("Failed to get current time");
         ts.tv_sec += waitSecs;
         int s = clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, NULL);
-        if (s != 0)
-            errorExit("Failed to sleep full duration");
+        if (s != 0) {
+            fprintf(stderr, "Failed to sleep full duration");
+            exit(EXIT_FAILURE);
+        }
     }
     if (fd < 0) {
         fprintf(stderr, "%s: Gave up on locking %s\n", argv[0], argv[optind]);

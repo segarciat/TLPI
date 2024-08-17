@@ -5,6 +5,8 @@ Write a simple version of this program.
 
 ## Solution
 
+### *procmail* and *lockfile(1)*
+
 Running `man procmail` and `man lockfile` yielded no results, so I searched
 for the page using:
 
@@ -39,6 +41,8 @@ The default is 8 seconds.
 
 - `-r retries`: This is the number of times the process should retry to obtain the semaphore. By default
 this is `-1`, which means forever.
+
+### My `lockfile` implementation
 
 I decided to only implement the `-sleeptime` and `-r retries` options. Moreover, I decided to  use `-w wait_time`
 instead of `-sleeptime`. Furthermore, I interpret any negative number (not just `-1`) to mean "retry forever".
