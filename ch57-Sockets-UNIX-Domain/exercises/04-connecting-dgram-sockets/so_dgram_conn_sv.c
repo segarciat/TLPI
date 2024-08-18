@@ -40,8 +40,6 @@ main(int argc, char *argv[])
 
     if (connect(sfdA, (struct sockaddr *) &addrB, sizeof(struct sockaddr_un)) == -1)
         errorExit("Failed to connect socket A to socket B");
-    if (connect(sfdB, (struct sockaddr *) &addrA, sizeof(struct sockaddr_un)) == -1)
-        errorExit("Failed to connect socket B to socket A");
 
     /* Receive messages */
     char buf[BUF_SIZE];
