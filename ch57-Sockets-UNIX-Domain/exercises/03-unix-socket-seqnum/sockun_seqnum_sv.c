@@ -43,14 +43,18 @@ main(int argc, char *argv[])
         ssize_t bytesRead = read(cfd, buf, BUF_SIZE);
         if (bytesRead == -1)
             errorExit("Failed to read client data from socket");
-        if (bytesRead == 0)
+        if (bytesRead == 0) {
+            close(cfd);
             continue;       /* No data read; skip */
+        }
 
         /* Parse number of sequence numbers desired */
         buf[bytesRead-1] = '\0';
         long requestCount;
-        if (parseLong(buf, &requestCount) == -1 || requestCount <= 0)
+        if (parseLong(buf, &requestCount) == -1 || requestCount <= 0) {
+            close(cfd);
             continue;   /* Bad request; skip */
+        }
 
         /* Assign sequence number to client */
         memset(buf, 0, BUF_SIZE);
@@ -60,6 +64,8 @@ main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
         seqnum += requestCount;
+        if (close(cfd) == -1)
+            fprintf(stderr, "Error closing client connected socket descriptor\n");
     }
 
     exit(EXIT_SUCCESS);
