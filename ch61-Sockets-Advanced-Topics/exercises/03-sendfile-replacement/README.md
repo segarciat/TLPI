@@ -17,4 +17,25 @@ My implementation of course does not maintain the data in the kernel space since
 transfer data between user and kernel space. Moreover, I employed the *readn()* and *writen()* from
 the `rdwrn.h` functions in Listing 61-1 provided with the code distribution of the book.
 
-I have omitted testing this implementation.
+I included a server and client program to verify my implementation.
+
+- The server program creates a TCP socket listening on port `50000`. After accepting a connection,
+it displays the address of the client and displays all contents it receives from the client to
+standard output.
+
+- The client expects a host and filename as arguments. It opens the file, connects to the host
+at port `50000`, and uses `sendfile_rwl()` to send the entire file to the host.
+
+Compile the client and server as follows:
+
+```bash
+make isock_cat_sv
+make isock_cat_cl
+```
+
+Then run the server in the background and run the client:
+
+```bash
+./isock_cat_sv &
+./isock_cat_cl localhost README.md
+```

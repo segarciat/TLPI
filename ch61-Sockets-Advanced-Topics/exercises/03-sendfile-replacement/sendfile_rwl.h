@@ -14,6 +14,6 @@
     the file offset is updated accordingly.
 
     See sendfile (2) for details about the operation of this function */
-ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);
+ssize_t sendfile_rwl(int out_fd, int in_fd, off_t *offset, size_t count);
 
 #endif

@@ -1,15 +1,17 @@
-#include "sendfile.h"
+#define _XOPEN_SOURCE 500   /* Expose S_ISSOCK() from <sys/stat.h> */
+#include "sendfile_rwl.h"
 #include "rdwrn.h"      /* readn(), writen() */
 #include <sys/stat.h>   /* struct stat, S_ISREG, S_ISSOCK */
 #include <unistd.h>     /* fstat(), lseek(), SEEK_SET, SEEK_CUR */
 #include <errno.h>      /* errno, EINVAL, EINTR */
 #include <stddef.h>     /* NULL */
+#include <stdio.h>
 
 #define BUF_SIZE 4096
 
 
 
-ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count)
+ssize_t sendfile_rwl(int out_fd, int in_fd, off_t *offset, size_t count)
 {
     struct stat sb;
 
@@ -22,7 +24,7 @@ ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count)
     /* in_fd must be point to a regular file */
     if (fstat(in_fd, &sb) == -1)
         return -1;
-    if (!S_ISREG(in_fd)) {
+    if (!S_ISREG(sb.st_mode)) {
         errno = EINVAL;
         return -1;
     }
@@ -30,7 +32,7 @@ ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count)
     /* out_fd must point to a socket */
     if (fstat(out_fd, &sb) == -1)
         return -1;
-    if (!S_ISSOCK(out_fd)) {
+    if (!S_ISSOCK(sb.st_mode)) {
         errno = EINVAL;
         return -1;
     }
