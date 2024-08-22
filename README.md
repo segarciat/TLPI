@@ -1,14 +1,54 @@
 # TLPI
 
-This directory consists of my self-study journey through the book *The Linux Programming Interface*
-by Michael Kerrisk. See [the book website here](https://man7.org/tlpi/).
+This repository documents my self-study journey through the book
+*The Linux Programming Interface* by Michael Kerrisk. See [the book website here](https://man7.org/tlpi/).
+
+In particular, this repository contains my implementation code and answers to most of the exercises
+found in the book. The language of choice was C to easily to follow along the book.
+
+I embarked on this journey with the goal of developing a firm foundation on Linux/UNIX
+concepts, and a conversant level in Linux/UNIX system programming. Though I've read
+the book linearly, my journey has been anything but that. For example, I had to develop
+a reading knowledge of C programming. Here are some turns I have taken or done simultaneously:
+
+- I learned C by reading and completing the exercises in the book [The C Programming Language](https://github.com/segarciat/TCPL), by Dennis and Ritchie.
+
+- I read [Modern 21st Century C](https://www.oreilly.com/library/view/21st-century-c/9781491904428/) to
+learn basics of setting up a modern C development environment and learn basics of C11.
+
+- I read the [GNU Make manual](https://www.gnu.org/software/make/manual/make.pdf) to make simple makefiles.
+
+- I learned fundamnetals of computer architecture, x86-64 assembly, operating systems, and system programming
+by reading and completing exercises in [CS:APP 3rd edition](https://github.com/segarciat/CSAPP) by Briant
+and O'Hallaron.
+
+In a world where it is difficult to get face-to-face mentorship, I am grateful to Michael Kerrisk
+because reading his book made it feel like he was there all along ensuring I understood the material.
+Feel free to look around and provide feedback.
+
+## Environment
+
+The following command outputs information about the environment I used throughout my journey:
+
+```bash
+cat <(lsb_release -dc) <(uname -rmo) <(/usr/lib/x86_64-linux-gnu/libc.so.6 | head -n 1)
+```
+
+```
+Description:	Ubuntu 22.04.4 LTS
+Codename:	jammy
+6.8.0-40-generic x86_64 GNU/Linux
+GNU C Library (Ubuntu GLIBC 2.35-0ubuntu3.8) stable release version 2.35.
+```
 
 ## TLPI Source Code
 
-The [source code is available through the book site](https://man7.org/tlpi/code/index.html),
-provided on the website as a compressed tarball:
+Michael Kerrisk provides [source code accompanying TLPI, available through the book site](https://man7.org/tlpi/code/index.html). The source code is provided on the website as a compressed tarball:
 
 ```bash
+# My repo directory
+cd TLPI
+
 # Download the tarball for Distributed Version (see website)
 wget https://man7.org/tlpi/code/download/tlpi-240109-dist.tar.gz
 
@@ -39,27 +79,16 @@ sudo apt install make
 make
 ```
 
-## Using the TLPI Lib
+The directory `tlpi-dist` contains folders with source code referenced through the code
+listings in the book. Of interest is also `tlpi-dist/lib`, which includes important headers
+and static archives such as `tlpi_hdr.h` and `libtlpi.a`, gracefully provided by Kerrisk.
+These are developed throughout the book starting on chapter 3, and I use them in many exercises.
 
-The book explains that the examples throughout the it use a homegrown library, consisting of functions
-for error handling and utilities for reading integers from stdin. The single header `"tlpi_hdr.h"`
-contains all that is necessary. Sometimes, it is helpful for exercises to reuse this library,
-and we can do so by linking against the library (which was built in the prior step), and then using a
-`makefile` in the directory of interest. Below is a template `makefile` that I use throughout exercises:
-
-```make
-P=prog_name
-TLPI_LIB_PATH=../../../TLPI/tlpi-dist # Or update path relative to where makefile will be
-OBJECTS=
-CFLAGS= -I$(TLPI_LIB_PATH)/lib -g -Wall -std=gnu11
-LDLIBS= -L$(TLPI_LIB_PATH) -l:libtlpi.a
-CC=gcc
-
-$(P): $(OBJECTS)
-```
-
-Be sure to update `prog_name`, and if necessary, `TLPI_LIB_PATH`. My default path assumes that
-an exercise file that uses it will be in a directory `TLPI/chxx-chaptername/xx-exercise-name/file.c`.
+To use the sources and headers in the TLPI distribution, I created a file `Makefile.template`
+that you will often see in my solutions. The template is meant to be used in the exercises,
+and assumes `tlpi-dist` is in a directory `TLPI` above them. I did my best to stick to
+a hierarchy such as `TLPI/chxxxxx/exercises/zz-zz/Makefile` and coded a path to the library
+directory that assumes this.
 
 ## PThreads
 
