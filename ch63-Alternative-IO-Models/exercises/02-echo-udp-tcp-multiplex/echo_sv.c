@@ -1,9 +1,21 @@
 #include <poll.h>
 #include <unistd.h>     /* close() */
 #include <fcntl.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include "echo_multiplex.h"
 
 #define BACKLOG 5
+
+/* Reap children processes forked to serve TCP requests */
+static void
+handleSigchld()
+{
+    int savedErrno = errno;
+    while (waitpid(-1, NULL, WNOHANG) > 0)
+        continue;
+    errno = savedErrno;
+}
 
 
 /* Service a TCP client using connected file descriptor cfd. */
@@ -106,11 +118,22 @@ main(int argc, char* argv[])
     pollFds[1].fd = udpSfd;
     pollFds[1].events = POLLIN;
 
+    /* Install SIGCHLD handler for children forked to handle TCP requests */
+    struct sigaction sa;
+    sa.sa_flags = SA_RESTART;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = handleSigchld;
+    if (sigaction(SIGCHLD, &sa, NULL) == -1)
+        errExit("sigaction(): Failed to install SIGCHLD handler");
+
     /* Perform multiplexed I/O */
     for (;;) {
         int ready = poll(pollFds, 2, -1);
-        if (ready == -1)
+        if (ready == -1){
+            if (errno == EINTR)
+                continue;
             errExit("poll(): Failed to determine readiness of file descriptors");
+        }
 
         if (pollFds[0].revents & POLLIN)    /* New TCP connection */
             acceptTcpConn(tcpLfd);
