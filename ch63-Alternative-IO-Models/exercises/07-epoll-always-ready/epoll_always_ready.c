@@ -33,7 +33,7 @@ main(int argc, char *argv[])
     for (size_t i = 0; i < numPipes; i++) {
         if (pipe(pfds[i]) == -1)
             errExit("pipe(): Failed to create pipe");
-        int ch = 'x';
+        unsigned char ch = 'x';
         if (write(pfds[i][1], &ch, 1) == -1)
             fatal("write(): Failed to write to pipe");
         struct epoll_event ev;

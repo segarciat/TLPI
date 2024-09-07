@@ -10,17 +10,17 @@ the *epoll_wait()* system calls.) Why migiht this behavior be useful?
 
 ## Solution
 
-I implemented a program similar to Listing , which creates the number of pipes specified
+I implemented a program similar to Listing 63-2, which creates the number of pipes specified
 in the first command-line argument. The program writes a single byte to the write end
 of each pipe, and then adds the file descriptor corresponding to the pipe's read end
-to the epoll interest list. It then enters a loop where it performs a fixed number of
+to the *epoll* interest list. It then enters a loop where it performs a fixed number of
 polls, each for at most 1 file descriptor. The number of polls can be specified as a
 second command-line argument, but it defaults to 1 million otherwise. The program does
-not read the pipe from the pipe, so all of the read file descriptors for the pipes
+not read the data in the pipe, so all of the read file descriptors for the pipes
 are always ready.
 
 I ran the program together with the `sort` and `uniq -c` commands to determine how many
-times each file descriptor was called.
+times each file descriptor was polled.
 
 To build and run:
 
