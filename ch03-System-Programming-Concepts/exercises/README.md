@@ -1,7 +1,7 @@
 # Exercise 3-1
 
 When using the Linux-specific `reboot()` system call to reboot the system, the second
-arugment, `magic2`, must be specified as one of a set of magic numbers (e.g., `LINUX_REBOOT_MAGIC2`).
+argument, `magic2`, must be specified as one of a set of magic numbers (e.g., `LINUX_REBOOT_MAGIC2`).
 What is the significance of these numbers? (Converting them to hexadecimal provides a clue).
 
 ## Solution
@@ -33,14 +33,14 @@ The hexadecimal values are as follows:
 | Label                  | Decimal   | Hex        |
 | ---------------------  | --------- | ---------- |
 | LINUX\_REBOOT\_MAGIC2  | 672274793 | 0x28121969 |
-| LINUX\_REBOOT\_MAGIC2A |  85072278 |  0x5121996 |
+| LINUX\_REBOOT\_MAGIC2A |  85072278 | 0x05121996 |
 | LINUX\_REBOOT\_MAGIC2B | 369367448 | 0x16041998 |
 | LINUX\_REBOOT\_MAGIC2C | 537993216 | 0x20112000 |
 
-Each hexadecimal value represents a date:
+Each hexadecimal value represents a date in *dd/mm/yyyy* format:
 
 - `LINUX\_REBOOT\_MAGIC2`: Its hex value corresponds to the date December 28th, 1969, the day when Linus Torvalds was born
   [see Wikipedia](https://en.wikipedia.org/wiki/Linus_Torvalds#Torvalds).
 
-The man pages mention also that the other three HEX values represent the birth of each of Linus' daughters. See the
+The Wikipedia pages mention also that the other three HEX values represent the birth of each of Linus' daughters. See the
 Personal Life section of the Wikipedia page.

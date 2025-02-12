@@ -1,74 +1,58 @@
-#include <stdio.h>  // fprintf, stderr, perror
-#include <stdlib.h> // exit, EXIT_SUCCESS
-#include <unistd.h> // read, write, lseek
-#include <fcntl.h>  // open, open flags
+#include <stdlib.h>     // exit, EXIT_SUCCESS
+#include <sys/types.h>  // For portability
+#include <unistd.h>     // read, write, lseek
+#include <fcntl.h>      // open, open flags
+#include <sys/stat.h>   // Mode (permission) flags
+#include "tlpi_hdr.h"
 
 #ifndef BUF_SIZE
 #define BUF_SIZE 1024
 #endif
 
+// rw-r--r--
+#define DEFAULT_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+
 /* copy: copy input file to output file, preserving holes */
-
-static void
-usageError(const char* progName)
-{
-	fprintf(stderr, "Usage: %s <old-file> <newfile>\n", progName);
-	exit(EXIT_FAILURE);
-}
-
-static void
-syscallError(const char *msg)
-{
-	perror(msg);
-	exit(EXIT_FAILURE);
-}
 
 int
 main(int argc, char *argv[])
 {
-	if (argc != 3)
-		usageError(argv[0]);
-	
-	/* Open input and output files */
-	int inputFd = open(argv[1], O_RDONLY);
-	if (inputFd == -1)
-		syscallError("opening input file");
+    if (argc != 3)
+        usageErr("%s <old-file> <new-file>\n", argv[0]);
+        
+    /* Open input and output files */
+    int inputFd = open(argv[1], O_RDONLY);
+    if (inputFd == -1)
+        errExit("opening input file");
 
-	int openFlags = O_CREAT | O_WRONLY | O_TRUNC;
-	int filePerms = S_IRUSR | S_IWUSR;
-	int outputFd = open(argv[2], openFlags, filePerms);
-	if (outputFd == -1)
-		syscallError("opening output file");
+    int outputFd = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, DEFAULT_PERMS);
+    if (outputFd == -1)
+        errExit("opening output file");
 
-	/* Save end-of-file position for EOF checks */
-	ssize_t eofPos;
-	if ((eofPos = lseek(inputFd, 0, SEEK_END)) == -1 || lseek(inputFd, 0, SEEK_SET) == -1)
-		syscallError("lseek input file");
+    /* Transfer data until we encounter EOF or error */
+    char buf[BUF_SIZE];
+    ssize_t numRead;
+    while ((numRead = read(inputFd, buf, BUF_SIZE)) > 0) {
+        // Heuristic: Any sequence of null bytes is a hole
+        ssize_t nullByteCount = 0;
+        while (nullByteCount < numRead && buf[nullByteCount] == '\0')
+            nullByteCount++;
+        // Advance past hole if necessary
+        if (nullByteCount != 0 && lseek(outputFd, (off_t) nullByteCount, SEEK_CUR) == -1)
+            errExit("lseek output file");
+        if (nullByteCount != numRead) {
+            ssize_t numToWrite = numRead - nullByteCount;
+            if (write(outputFd, buf, (size_t) numToWrite) != numToWrite)
+                errExit("write to output file");
+        }
+    }
+    if (numRead == -1)
+        errExit("read error");
 
-	/* Transfer data until we encounter EOF or error */
-	char buf[BUF_SIZE];
-	ssize_t numRead;
-	while ((numRead = read(inputFd, buf, BUF_SIZE)) >= 0)
-		if (numRead == 0) {
-			/* Determine if hole or if reached EOF */
-			off_t curPos = lseek(inputFd, 0, SEEK_CUR);
-			if (curPos == -1)
-				syscallError("lseek input file");
-			else if (curPos == eofPos)
-				break;
-			/* Seek past end to introduce hole in output file, and reset input file position */
-			else if (lseek(outputFd, 1, SEEK_END) == -1) 
-				syscallError("lseek output file");
-		} /* Write to output file */
-		else if (write(outputFd, buf, numRead) != numRead)
-			syscallError("write to output file");
-	if (numRead == -1)
-		syscallError("read error");
-
-	if (close(inputFd) == -1)
-		syscallError("close input file");
-	if (close(outputFd) == -1)
-		syscallError("close output file");
-	
-	exit(EXIT_SUCCESS);
+    if (close(inputFd) == -1)
+        errExit("close input file");
+    if (close(outputFd) == -1)
+        errExit("close output file");
+    
+    exit(EXIT_SUCCESS);
 }

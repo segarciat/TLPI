@@ -1,28 +1,44 @@
 # Exercise 04-02
 
-Write a program like `cp` that, when used to copy a reuglar file that contains
+Write a program like `cp` that, when used to copy a regular file that contains
 holes (sequences of null bytes), also creates corresponding holes in the target
 file.
 
 ## Solution
 
-The implementation here determines whether a hole in the file was found by comparing
-the current position and end position of the input file by calling `lseek`. If the
-values are equal, then we've reached the end-of-file and we stop reading input. Otherwise,
-it's a file hole, so we introduce a hole in the output file, reset the input file position,
-and continue reading input.
+My implementation makes use of the heuristic that any sequence of null bytes
+indicates a hole. Of course this may not necessarily be the case, since
+a null byte could have been written explicitly to the file.
 
 ```bash
-# Build executable using makefile
-make
+# Build executable
 
-# sample input files
-cat "hi" > hello.txt
-cat "bye" > goodbye.txt
+# Copy README
+./copy README.md README-COPY.md
+diff README.md README-COPY.md
+```
 
-# Creates greetings.txt with the same contents as in hello.txt
-./copy hello.txt greetings.txt
+The `diff` command does not show output because the files are identical.
+Next, we use the `seek_io` program from Listing 4.3 to create a file
+with holes and verify whether the holes are preserved after copying.
 
-# Overwrite contents in goodbye.txt with contents of hello.txt
-./copy hello.txt goodbye.txt
+```bash
+# Create file with 4 bytes and a hole
+touch tfile
+../../../tlpi-dist/fileio/seek_io tfile s100000 wabc
+./copy tfile tfile-copy
+```
+
+Running `ls -l tfile tfile-copy` reports:
+
+```
+-rw-rw-r-- 1 sgarciat sgarciat 100003 Feb 12 16:38 tfile
+-rw-r--r-- 1 sgarciat sgarciat 100003 Feb 12 16:39 tfile-copy
+```
+
+Running `du -k tfile tfile-copy` reports:
+
+```
+4	tfile
+4	tfile-copy
 ```
