@@ -18,11 +18,13 @@ LDFLAGS = -L$(TLPI_LIB_PATH)
 LDLIBS = -l:libtlpi.a
 
 # Name of executable to create
-PROGRAM = tee
-OBJECTS = $(PROGRAM).o
+PROGRAM = t_readv
+OBJECTS = $(PROGRAM).o scatter_gather_io.o
 
 # Use implicit C compilation and linking rules to compile
 $(PROGRAM): $(OBJECTS)
+
+scatter_gather_io.o: scatter_gather_io.h
 
 .PHONY: clean
 clean:

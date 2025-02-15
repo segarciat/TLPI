@@ -8,7 +8,7 @@ main(int argc, char* argv[])
 	if (argc != 2 || strcmp(argv[1], "--help") == 0)
 		usageErr("%s file\n", argv[0]);
 
-	int fd = open(argv[1], O_RDONLY | O_SYNC);
+	int fd = open(argv[1], O_RDONLY);
 	if (fd == -1)
 		errExit("open");
 	
@@ -17,7 +17,7 @@ main(int argc, char* argv[])
 		errExit("dup");
 	
 	int oldFlags, dupFlags;
-	if ((oldFlags = fcntl(fd, F_GETFL)) == -1 || (dupFlags = fcntl(fd, F_GETFL)) == -1)
+	if ((oldFlags = fcntl(fd, F_GETFL)) == -1 || (dupFlags = fcntl(dupfd, F_GETFL)) == -1)
 		errExit("fcntl GETFL");
 	if (oldFlags != dupFlags)
 		errExit("duplicate file descriptor flags differ");
@@ -33,4 +33,7 @@ main(int argc, char* argv[])
 		errExit("Offsets differ");
 	printf("Flags and offsets match!\n"
 			"Flags: %d\nOffsets:%lld\n", oldFlags, (long long) eofOffset);
+    if (close(fd) == -1)
+        errExit("close");
+    exit(EXIT_SUCCESS);
 }

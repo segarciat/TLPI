@@ -28,7 +28,7 @@ int
 main(int argc, char *argv[])
 {
     int fd;
-    struct iovec iov[3];
+    struct my_iovec iov[3];
     struct stat myStruct;       /* First buffer */
     int x;                      /* Second buffer */
 #define STR_SIZE 100
@@ -46,19 +46,19 @@ main(int argc, char *argv[])
 
     iov[0].iov_base = &myStruct;
     iov[0].iov_len = sizeof(struct stat);
-    totRequired += iov[0].iov_len;
+    totRequired += (ssize_t) iov[0].iov_len;
 
     iov[1].iov_base = &x;
     iov[1].iov_len = sizeof(x);
-    totRequired += iov[1].iov_len;
+    totRequired += (ssize_t) iov[1].iov_len;
 
     iov[2].iov_base = str;
     iov[2].iov_len = STR_SIZE;
-    totRequired += iov[2].iov_len;
+    totRequired += (ssize_t) iov[2].iov_len;
 
-    numRead = readv(fd, iov, 3);
+    numRead = my_readv(fd, iov, 3);
     if (numRead == -1)
-        errExit("readv");
+        errExit("my_readv");
 
     if (numRead < totRequired)
         printf("Read fewer bytes than requested\n");

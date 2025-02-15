@@ -18,11 +18,13 @@ LDFLAGS = -L$(TLPI_LIB_PATH)
 LDLIBS = -l:libtlpi.a
 
 # Name of executable to create
-PROGRAM = tee
-OBJECTS = $(PROGRAM).o
+PROGRAM = main
+OBJECTS = $(PROGRAM).o my_dup.o
 
 # Use implicit C compilation and linking rules to compile
 $(PROGRAM): $(OBJECTS)
+
+my_dup.o: my_dup.h
 
 .PHONY: clean
 clean:

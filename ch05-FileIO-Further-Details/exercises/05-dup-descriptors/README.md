@@ -16,3 +16,16 @@ the current offset on the duplicate fd, this time with a call `lseek(dupfd, 0, S
 For the open file status flags, I was careful to use the flags returned by `fcntl(fd, F_GETFL)`,
 and not the ones passed initially to `open()`, when comparing against the status flag
 returned by `fcntl(dupfd, F_GETFL)`.
+
+```c
+make
+./verify_dup_descriptors README.md
+```
+
+Sample output:
+
+```
+Flags and offsets match!
+Flags: 32768
+Offsets:868
+```

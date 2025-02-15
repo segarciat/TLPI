@@ -1,7 +1,7 @@
 # Exercise 05-03
 
 This exercise is designated to demonstrate why the atomicity guaranteed by opening
-a file with the `O_APPEND` flag is necessary. Write a progrma that takes up to
+a file with the `O_APPEND` flag is necessary. Write a program that takes up to
 three command-line arguments:
 
 ```bash
@@ -55,9 +55,9 @@ the `x` argument is provided. Consider the first case:
 Since the processes are different, the file descriptors they have for `f1`
 points to different file descriptions in the system-wide open file table. As a result,
 their file offsets are independent. However, the inode of both descriptions corresponds
-to the same inode entry, for `f1`. As a result, the writes they both made to the file.
+to the same inode entry, for `f1`. As a result, the writes are made to the same file.
 
-Since the `x` argument is not specified, both file descriptors have `O_CREAT` as part
+Since the `x` argument is not specified, both file descriptors have `O_APPEND` as part
 of their status flags. Therefore, rather than the normal behavior where a call to `write()`
 writes to the location specified by the file offset in the open file description entry,
 each `write()` call seeks to the end of the file and then writes the requested bytes in an
@@ -74,9 +74,9 @@ Consider now the second case:
 Most details are the same as in the first case: the file descriptors in the two processes
 point to different open file descriptions in the system-wide open-file table, so
 their file offsets are independent, but they have the same inode entry because they both
-refer to file `f1`.
+refer to file `f2`.
 
-However, since `x` is specified, neither descriptor has the `O_CREAT` status flag, so
+However, since `x` is specified, neither descriptor has the `O_APPEND` status flag, so
 each `write()` is done at the location specified by the status offset field in the
 respective open file description entries referred to by their file descriptors.
 Moreover, the `x` argument also causes each `write()` is preceded by a call to
@@ -87,7 +87,7 @@ it's possible for the following to happen:
    independent entry on the open file table.
 
 2. The kernel scheduler decides that the time slice for the process has expired.
-   It puts process 1 on hold and gives control to process 2.
+   It suspends process 1 and gives control to process 2.
 
 3. Process 2 calls `lseek(fd, 0, SEEK_END)`, updating its file offset to the same
    location as process 1.
@@ -95,7 +95,7 @@ it's possible for the following to happen:
 4. Process 2 calls `write()`, writing to the current file offset indicated in its own
    open file description entry, and updating its own offset to the next position.
 
-5. The scheduler puts process 2 on hold and transfers control back to process 1.
+5. The scheduler preempts process 2 and transfers control back to process 1.
 
 6. Process 1 calls `write()`, writing to the current file offset indicated in its own
    open file description; this is the old position that process 2 wrote to. In this

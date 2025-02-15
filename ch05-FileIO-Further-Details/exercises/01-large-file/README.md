@@ -7,11 +7,19 @@ that a large file can be successfully created.
 
 ## Solution
 
-To build the project, note that the `makefile` assumes the existence of `tlpi_dist`
-at the root of this git repository, provided as a relative path. Note that the
-directory `tlpi_dist` is in the `.gitignore`, so it is not included, but you can
-obtain it from the book's site.
-
 I tested `large_file` on a Raspberry PI, and I used the `uname -m` command to learn
 what its kernel architecture was. Its output was `armv7l`, which is 32-bit.
 The file was created successfully in spite of being at least 10GB in size.
+
+```bash
+make
+
+# 10000000 bytes, or about 10 GB
+./large_file tfile 10000000
+
+# See information about file
+ls -l tfile
+
+make clean
+rm tfile
+```
