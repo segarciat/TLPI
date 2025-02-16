@@ -26,7 +26,7 @@
 
         (Only the last of these should see the program break lowered.)
 */
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #include "tlpi_hdr.h"
 
 #define MAX_ALLOCS 1000000
@@ -59,7 +59,7 @@ main(int argc, char *argv[])
 
     printf("Allocating %d*%d bytes\n", numAllocs, blockSize);
     for (j = 0; j < numAllocs; j++) {
-        ptr[j] = malloc(blockSize);
+        ptr[j] = malloc((size_t) blockSize);
         if (ptr[j] == NULL)
             errExit("malloc");
 		if (j >= mallocMin-1 && j < mallocMax && (j % mallocStep) == 0)
