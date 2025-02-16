@@ -1,3 +1,5 @@
+#define _DEFAULT_SOURCE /* Expose clearenv() in stdlib.h */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "set_unset_env.h"
@@ -5,16 +7,16 @@
 extern char** environ;
 
 int
-main(int argc, char *argv[])
+main()
 {
 	clearenv(); // Erase environment
 
-	setenv_s("GREETING", "HELLO", 0);
-	setenv_s("GREETING", "HI", 0);
-	setenv_s("GREETING", "Hiya", 1);
-	setenv_s("EXERCISE", "JUMP", 0);
-	setenv_s("BEVERAGE", "WATER", 0);
-	unsetenv_s("EXERCISE");
+	my_setenv("GREETING", "HELLO", 0);
+	my_setenv("GREETING", "HI", 0);
+	my_setenv("GREETING", "Hiya", 1);
+	my_setenv("EXERCISE", "JUMP", 0);
+	my_setenv("BEVERAGE", "WATER", 0);
+	my_unsetenv("EXERCISE");
 
 	for (char **p = environ; *p != NULL; p++)
 		puts(*p);

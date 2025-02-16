@@ -25,8 +25,8 @@ we get the output
 From the discussion on Section 6.3 on the memory layout of a process,
 the memory allocated to a process consists of parts called segments.
 Among them is the *uninitialized data segment* (or *zero-initialized
-data segment*). It conatins global and static variables that are explicitly
-not initialized. In the case of `mbuf` in the main function, we have:
+data segment*). It contains global and static variables that are explicitly
+not initialized. In the case of `mbuf` in the `main` function, we have:
 
 ```c
 /* more code */
@@ -34,9 +34,10 @@ static char mbuf[10240000];
 /* more code */
 ```
 
-Since it is declared static and not otherwise initialized, it belongs
+Since it is declared `static` and not otherwise initialized, it belongs
 in the uninitialized data segment. As discussed in the text, when a
 program is stored on disk, it is not necessary to allocate space for
-initialized data. Instead, the program records the location and size
+uninitialized data. Instead, the program records the location and size
 required for the uninitialized data, and allocates it at run time
-with 0s when the program is loaded into memory.
+with 0s when the program is loaded into memory. Therefore, the 10MB
+array size does not factor into the size of the executable.

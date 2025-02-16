@@ -1,17 +1,22 @@
+#define _DEFAULT_SOURCE /* Exposes definition of putenv() in stdlib */
+
 #include <stdio.h>  // snprintf
 #include <stdlib.h> // getenv, putenv, malloc
 #include <string.h> // strlen, strncmp
+#include <stddef.h> // size_t
 #include "set_unset_env.h"
 
 extern char **environ;
 
-int setenv_s(const char *name, const char *value, int overwrite)
+int my_setenv(const char *name, const char *value, int overwrite)
 {
 	if (!name || !value)
 		return -1;
+
 	/* Variable exists and overwrite is 0 (no overwrite) */
 	if (!overwrite && getenv(name))
 		return 0;
+
 	size_t nameLen = strlen(name);
 	size_t valueLen = strlen(value);
 	size_t totalLen = nameLen + valueLen;
@@ -23,23 +28,26 @@ int setenv_s(const char *name, const char *value, int overwrite)
 	char *buf = malloc(totalLen);
 	if (buf == NULL)
 		return -1;
-	/* Concatenate name value pair and save environment variable */
-	if (snprintf(buf, totalLen, "%s=%s", name, value) == -1 || !putenv(buf))
-		return -1;
-	return 0;
+
+    /* Build string name=value format */
+    memcpy(buf, name, nameLen);
+    buf[nameLen] = '=';
+    strcpy(buf + nameLen + 1, value);
+
+    if (!putenv(buf))
+        return -1;
+    return 0;
 }
 
-int unsetenv_s(const char *name)
+int my_unsetenv(const char *name)
 {
 	if (!name)
 		return -1;
 	if (!environ)
 		return 0;
-	size_t len = strlen(name);
-	if (name[len - 2] == '=')
-		return -1;
+
 	for (char **ep = environ; *ep != NULL; ep++)
-		if (strncmp(*ep, name, len) == 0 && !putenv(*ep))
+		if (strcmp(*ep, name) == 0 && !putenv(*ep))
 			return -1; // non-standard glibc behavior
 	return 0;
 }
