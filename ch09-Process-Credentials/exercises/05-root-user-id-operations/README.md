@@ -13,14 +13,26 @@ real=X effective=0 saved=0
 Only the behavior of `setuid` changes (with respect to the previous exercise):
 
 ```c
-/* When a privileged process calls setuid, the result is that the real, effective, and saved-set
+/*
+ * When a privileged process calls setuid, the result is that the real, effective, and saved-set
  * user IDs all change to the provided value. Therefore, once we make this call to suspend, we may
  * no longer return to root (unless X=0).
  */
 
-seteuid(getuid());
+uid_t ruid = getuid();
+seteuid(ruid);
 seteuid(0);
+
+setreuid(-1, ruid);
+setresuid(-1, ruid, -1);
 ```
 
 - All answers are same as previous exercise, but `setuid` can be used to permanently drop all permissions
-in this case with `setuid(getuid());`.
+in this case with `setuid(getuid());`:
+
+```c
+uid_t ruid = getuid();
+suid(ruid);
+setreuid(ruid, ruid);
+setresuid(ruid ruid);
+```

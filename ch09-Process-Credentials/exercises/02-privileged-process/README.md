@@ -9,7 +9,7 @@ real=0 effective=1000 saved=1000 file-system=1000
 ## Solution
 
 No. A process is privileged when it executes with an effective used ID with a value 0.
-However, the an unprivileged process can use the system call `setuid`, `seteuid`, `setreuid`,
+However, an unprivileged process can use the system call `setuid`, `seteuid`, `setreuid`,
 or `setresuid` (if available) to change its effective ID to the same value of its real user
-ID or its saved set user ID. Thus, it is available to obtain root privilege.
+ID or its saved set user ID. Thus, the process in question is currently able to become privileged.
 

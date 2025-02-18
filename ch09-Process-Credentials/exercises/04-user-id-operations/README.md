@@ -26,7 +26,7 @@ calls listed above, some of these operations can't be performed.
 
 ```c
 /* Suspend by changing effective user ID to real user ID */
-gid_t ssuid = geteuid();
+uid_t ssuid = geteuid();
 setuid(getuid()); /* Change effective user ID to X */
 setuid(ssuid); /* Change effective user ID to Y */
 
@@ -40,9 +40,11 @@ setresuid(-1, getuid(), -1); /* Change effective used ID to X */
 setresuid(-1, ssuid, -1); /* Changes effective user ID to Y */
 ```
 
-- For the `setreuid` call, it is necessary to explicitly change the saved set userID.
-If the provided userID is not -1, we ensure that the saved set user ID gets
-changed to the same value of the new effective ID:
+- For an unprivileged process, `setuid` and `seteuid` only change the
+effective user ID. For the `setreuid` call, it is necessary to explicitly
+change the saved set userID. If the provided userID is not -1, we ensure
+that the saved set user ID gets changed to the same value of the new
+effective ID:
 
 ```c
 /* setuid cannot change the value of the saved set-user-ID */
