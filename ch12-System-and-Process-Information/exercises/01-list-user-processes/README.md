@@ -9,3 +9,22 @@ described in Section 18.8. Make sure your program correctly handles the possibil
 a `/proc/PID` directory disappears between the time that the program determines that the
 directory exists and the time that it tries to open the corresponding `/proc/PID/status`
 file.
+
+## Solution
+
+To build and run:
+
+```bash
+make
+./pslist root
+```
+
+Here's a trimmed version of the sampled output:
+
+```
+PID: 1		Command: systemd
+PID: 2		Command: kthreadd
+PID: 3		Command: pool_workqueue_release
+...
+PID: 16753		Command: kworker/u32:2
+```
