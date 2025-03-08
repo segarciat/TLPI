@@ -1,6 +1,6 @@
 # Exercise 12-03
 
-Write a program that lists all processes taht have a particular file pathname open.
+Write a program that lists all processes that have a particular file pathname open.
 This can be achieved by inspecting the contents of all the `/proc/PID/fd/*` symbolic
 links. This will require nested loops employing *readdir(3)* to scan all `/proc/PID`
 directories, and then the contents of all `/proc/PID/fd` entries within each `/proc/PID`
@@ -10,10 +10,11 @@ directory. To read the contents of a `/proc/PID/fd/n` symbolic link requires the
 ## Solution
 
 My solution expects exactly 1 command-line argument, representing the path of a file.
-Then it goes on to file processes that have this file opens. I used `realpath` from
+Then it goes on to find processes that have this file open. I used `realpath` from
 `stdlib.h` to canonicalize the given path (see `man 3 realpath`). Since a process
-may have multiple file descriptors for a given file, I enwsured that the process
-number was only displayed once.
+may have multiple file descriptors for a given file, I ensure that the process
+number was only displayed once by calling `break` after any one instance of it
+was found.
 
 ### Compile and Run
 
