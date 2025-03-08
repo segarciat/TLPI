@@ -4,7 +4,7 @@ Try running the program in Listing 11-2 on other file systems.
 
 ## Solution
 
-The values in my WSL 2 environment in my Windows machine are"
+When run on my Ubuntu 24 Linux 6.11 system, I see the values:
 
 ```
 _PC_NAME_MAX:  255

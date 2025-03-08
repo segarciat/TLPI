@@ -4,7 +4,7 @@ Try running the program in Listing 11-1 on other UNIX implementations if you hav
 
 ## Solution
 
-When run on my Windows WSL 2 environment, the values are:
+When run on my Ubuntu 24 Linux 6.11 system, I see the values:
 
 ```
 _SC_ARG_MAX:         2097152
