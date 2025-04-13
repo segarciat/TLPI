@@ -9,6 +9,26 @@ My program uses calls `sigaction()` with a `SIGINT` as the `sig` argument to cha
 disposition of the program when it is delivered *SIGINT* a signal. For the `sigaction` argument,
 I specified a `struct sigaction` structure whose `sa_handler` field is `SIG_IGN`. Then,
 I used `sleep()` to make the process idle for a short duration to allow me time to
-try to attempt to terminate the process with a *CTRL+C* (a *SIGINT*). After the sleep
-is over, I reset the disposition to the default with `SIG_DFL` and inform the user
-that the progress will run until and sleep until a terminating signal is received.
+attempt to terminate the process with a *CTRL+C* (a *SIGINT*). After the sleep
+is over, I displayed the pending signal set, which I expected to be empty. Then
+I reset the disposition to the default with `SIG_DFL` and inform the user
+that the process will sleep until a terminating signal is received (such as `SIGINT`).
+
+Here is a sample run:
+
+```bash
+make
+./sig_ign_disposition
+```
+
+Here is the sample interaction:
+
+```
+Interrupt ignored. Sleeping for about 5 seconds...
+^C^C^C^C^C^C^C^C^C^C^C^C^C^CDone sleeping! Checking signals in pending set.
+Pending signals:
+		<empty signal set>
+Resetting disposition of Interrupt
+Pausing until interrupted... (Press CTRL+C)
+^C
+```

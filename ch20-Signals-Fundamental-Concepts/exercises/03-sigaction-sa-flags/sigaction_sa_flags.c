@@ -1,7 +1,7 @@
+#define _DEFAULT_SOURCE
 #include <signal.h> /* struct sigaction, sigaction(), SIGINT, SA_NODEFER, SA_RESETHAND */
 #include <stdlib.h> /* exit(), EXIT_FAILURE */
-#include <stdio.h> /* fprintf(), stderr */ 
-#define _GNU_SOURE
+#include <stdio.h>  /* fprintf(), stderr */ 
 #include <string.h> /* strsignal() */
 #include <unistd.h> /* sleep() */
 
@@ -19,15 +19,17 @@ void handlerNoDefer(int signal)
 
 void handlerResetHand(int signal)
 {
-	printf("Caught %s! Resetting disposition. Try again\n", strsignal(signal));
+	/* UNSAFE: Handler uses stdio.h functions that are non-async-signal-safe */
+	printf("Caught %s! Dispoition will be reset to defualt. Try again\n", strsignal(signal));
 }
 
 int
 main(int argc, char *argv[])
 {
+    (void) argc;
 	int signal = SIGINT;
 	/* Set disposition for SIGINT with SA_NODEFER, which means it won't be added to
-	 * the process signal mask when handled */
+	 * the process signal mask when caught */
 	struct sigaction sanodefer, saresethand;
 	if (sigemptyset(&sanodefer.sa_mask) == -1) {
 		fprintf(stderr, "%s: Failed to set mask for sigaction\n", argv[0]);
@@ -50,7 +52,7 @@ main(int argc, char *argv[])
 		fprintf(stderr, "%s: Failed to set mask for sigaction\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
-	saresethand.sa_flags = SA_RESETHAND;
+	saresethand.sa_flags = (int) SA_RESETHAND;
 	saresethand.sa_handler = handlerResetHand;
 	if (sigaction(signal, &saresethand, NULL) == -1) {
 		fprintf(stderr, "%s: Failed to disposition for %s signal\n", argv[0], signalDescription);

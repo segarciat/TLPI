@@ -24,6 +24,24 @@ the *kill(1)* command. Messages are printed by making calls to functions in `<st
 which is deemed unsafe as described in chapter 20, but it's ok for these simple verifications.
 
 ```bash
-gcc sigaction_sa_flags.c
-# Press CTRL+C as instructed
+make
+./sigaction_sa_flags.c
+```
+
+Here is the full interaction:
+
+```
+Set disposition on Interrupt signal with SA_NODEFER, allowing recursively calling handler
+^CCaught Interrupt! Sleeping for 5 seconds...unless you interrupt
+^CCaught Interrupt! Sleeping for 5 seconds...unless you interrupt
+^CCaught Interrupt! Sleeping for 5 seconds...unless you interrupt
+Done!
+I could have slept for 2 more seconds...
+Done!
+I could have slept for 3 more seconds...
+Done!
+Set disposition on Interrupt with SA_RESETHAND, resetting after it's done
+^CCaught Interrupt! Dispoition will be reset to defualt. Try again
+Ok go ahead and interrupt now
+^C
 ```
