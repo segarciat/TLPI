@@ -1,3 +1,5 @@
+/* Modified by Sergio E. Garcia Tapia for Exercise 20.1 */
+
 /*************************************************************************\
 *                  Copyright (C) Michael Kerrisk, 2023.                   *
 *                                                                         *
@@ -49,6 +51,7 @@ main(int argc, char *argv[])
        but for the reasons described in Section 22.7 of TLPI, sigaction()
        is the (strongly) preferred API for this task. */
 	
+    /* EDIT: Replaced signal() with sigaction */
 	struct sigaction sigAction;
 	if (sigemptyset(&sigAction.sa_mask) == -1)
 		errExit("sigemptyset");
@@ -70,7 +73,7 @@ main(int argc, char *argv[])
             errExit("sigprocmask");
 
         printf("%s: sleeping for %d seconds\n", argv[0], numSecs);
-        sleep(numSecs);
+        sleep((unsigned int) numSecs);
 
         if (sigpending(&pendingMask) == -1)
             errExit("sigpending");
