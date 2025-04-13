@@ -19,3 +19,18 @@ I used `sigprocmask()` to ensure `SIGABRT` was removed from the process signal m
 to be called. Upon return (if the handler did not have a non-local goto/long jump), I reset the
 handler to `SIG_DFL`, flushed all *stdio* streams with `fflush()`, and closed `stdin`, `stdout`,
 and `stderr` before issuing `SIGABRT` once more with `raise()`.
+
+```bash
+make
+./main
+```
+
+Sample output:
+
+```
+Setting abort handler
+Adding abort to signal mask
+Sleeping and then trying to abort...
+Abort handler called
+Aborted (core dumped)
+```

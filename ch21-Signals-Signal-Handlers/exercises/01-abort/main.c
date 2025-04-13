@@ -1,12 +1,14 @@
-#include <stdio.h> /* printf() */
-#include <unistd.h> /* sleep() */
-#include <signal.h> /* sigset_t, sigemptyset(), sigaddset(), SIGABRT, sigprocmask(), SIG_BLOCK */
-#include <stdlib.h> /* exit(), EXIT_FAILURE, EXIT_SUCCESS */
-#include "abort.h" /* s_abort() */
+#define _DEFAULT_SOURCE /* Enable sigaction */
+#include <stdio.h>      /* printf() */
+#include <unistd.h>     /* sleep() */
+#include <signal.h>     /* sigset_t, sigemptyset(), sigaddset(), SIGABRT, sigprocmask(), SIG_BLOCK */
+#include <stdlib.h>     /* exit(), EXIT_FAILURE, EXIT_SUCCESS */
+#include "abort.h"      /* s_abort() */
 
 static void
 abortHandler(int sig)
 {
+    (void) sig;
 	/* UNSAFE: printf is a non-async-signal-safe function */
 	printf("Abort handler called\n");
 }
@@ -14,6 +16,7 @@ abortHandler(int sig)
 int
 main(int argc, char *argv[])
 {
+    (void) argc;
 	printf("Setting abort handler\n");
 	struct sigaction sa;
 	if (sigemptyset(&sa.sa_mask) == -1) {
