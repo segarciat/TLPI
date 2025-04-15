@@ -6,7 +6,14 @@ the parent.
 
 ## Solution
 
-The program `vfork_fds.c` that I work uses `vfork()`, and closes file descriptor 0,
+The program `vfork_fds.c` that I wrote uses `vfork()`, and closes file descriptor 0,
 corresponding to standard input, with the `close()` system call. Then when the parent
 process resumes, it tries to use file descriptor 0 by reading input with `read()`, which
-it the echos back with `write()`.
+it then echos back with `write()`.
+
+Build and run as:
+
+```bash
+make
+./vfork_fds
+```

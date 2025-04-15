@@ -9,7 +9,7 @@ be required in order to enforce this?
 In the child, after sending the initial synchronization signal to the parent,
 the child can use `sigsuspend()` or `sigwaitinfo()` to wait for the signal from
 the parent. Since the synchronization signal is added to the process signal mask
-before the `fork()`, it will become pending when it is interchanged. In the parent
+before the `fork()`, it will become pending when it is generated. In the parent
 after completing the actions of interest, we use `kill(childPid, SYNC_SIG)` to
 send the signal to the child, optinally followed by `wait(NULL)` or (`wait(&status)`
 if the parent cares about the termination status of the child). Finally, the child
