@@ -1,31 +1,34 @@
-#include <sys/types.h> /* pid_t */
-#include <unistd.h> /* fork() */
-#include <stdlib.h> /* exit(), EXIT_FAILURE */
-#include <errno.h> /* errno */
-#include <stdio.h> /* fprintf(), printf(), stderr, stdout */
-#include <string.h> /* strerror() */
-#include <limits.h> /* PATH_MAX */
+#define _DEFAULT_SOURCE
+#include <sys/types.h>  /* pid_t */
+#include <unistd.h>     /* fork() */
+#include <stdlib.h>     /* exit(), EXIT_FAILURE */
+#include <errno.h>      /* errno */
+#include <stdio.h>      /* fprintf(), printf(), stderr, stdout */
+#include <string.h>     /* strerror() */
+#include <limits.h>     /* PATH_MAX */
 
 #define CHILD_SLEEP 2
 #define PARENT_SLEEP 1
 
 void
-error(char *msg)
+error(const char *msg)
 {
 	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 	exit(EXIT_FAILURE);
 }
 
 int
-main(int argc, char *argv[])
+main()
 {
 	pid_t pid;
 
 	/* Don't buffer output */
 	setbuf(stdout, NULL);
 	switch(pid = fork()) {
-		case -1: error("Fork failed");
-		case  0: /* Child */
+		case -1:
+            error("Fork failed");
+            break;
+		case  0:; /* Child (intentional null statement) */
 			/* Display parent before sleep */
 			pid_t childPid = getpid();
 			printf("Child (%ld): Parent has pid %ld. Sleeping...\n", (long) childPid, (long) getppid());
@@ -52,7 +55,7 @@ main(int argc, char *argv[])
 				error("Error reading parent process file");
 			printf("Failed to find parent");
 			exit(EXIT_FAILURE);
-		default: /* Parent */
+		default:; /* Parent (intentional null statement) */
 			pid_t parentPid = getpid();
 			printf("Parent (%ld): Sleeping...\n", (long) parentPid);
 			sleep(PARENT_SLEEP);

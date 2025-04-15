@@ -1,3 +1,5 @@
+/* Modified by Sergio e. Garcia Tapia for Exercise 26.4 */
+
 /*************************************************************************\
 *                  Copyright (C) Michael Kerrisk, 2023.                   *
 *                                                                         *
@@ -17,6 +19,7 @@
    which time it is adopted by init(8), which does a wait, thus releasing
    the zombie).
 */
+#define _DEFAULT_SOURCE
 #include <signal.h>
 #include <libgen.h>             /* For basename() declaration */
 #include "tlpi_hdr.h"
@@ -26,6 +29,7 @@
 int
 main(int argc, char *argv[])
 {
+    (void) argc;
     char cmd[CMD_SIZE];
     pid_t childPid;
 
@@ -51,7 +55,8 @@ main(int argc, char *argv[])
     default:    /* Parent */
 		sigwaitinfo(&blockMask, NULL); /* Give child a chance to start and exit */
         snprintf(cmd, CMD_SIZE, "ps | grep %s", basename(argv[0]));
-        system(cmd);            /* View zombie child */
+        int status = system(cmd);            /* View zombie child */
+        (void) status;
 
         /* Now send the "sure kill" signal to the zombie */
 
@@ -59,7 +64,8 @@ main(int argc, char *argv[])
             errMsg("kill");
         sleep(3);               /* Give child a chance to react to signal */
         printf("After sending SIGKILL to zombie (PID=%ld):\n", (long) childPid);
-        system(cmd);            /* View zombie child again */
+        status = system(cmd);            /* View zombie child again */
+        (void) status;
 
         exit(EXIT_SUCCESS);
     }

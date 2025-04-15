@@ -18,8 +18,8 @@ is adopted after its parent terminates.
 I wrote `grandchild_adoption_order.c` and verified this was the case: 
 
 ```bash
-gcc grandchild_adoption_order.c
-./a.out
+make
+./grandchild_adoption_order
 ```
 
 The following is sample output from running the program:

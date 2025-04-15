@@ -29,5 +29,5 @@ Then I replaced `sleep(3)` with `sigwaitinfo()` to wait for `SIGCHLD`:
 ```
 
 If we don't block the signal prior to `sigwaitinfo()`, then the child could terminate before the
-parent is scheduled, and the parent suspend forever. Moreover, we cannot block after the `fork()`
+parent is scheduled, and the parent suspends forever. Moreover, we cannot block after the `fork()`
 for the same reason.

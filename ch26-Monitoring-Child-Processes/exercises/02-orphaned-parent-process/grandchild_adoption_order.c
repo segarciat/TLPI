@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include <sys/types.h> /* pid_t */
 #include <unistd.h> /* fork(), sleep() */
 #include <sys/wait.h> /* wait() */
@@ -11,14 +12,14 @@
 #define PARENT_SLEEP 1
 
 void
-error(char *msg)
+error(const char *msg)
 {
 	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 	exit(EXIT_FAILURE);
 }
 
 int
-main(int argc, char *argv[])
+main()
 {
 	pid_t pid;
 
@@ -26,12 +27,16 @@ main(int argc, char *argv[])
 	setbuf(stdout, NULL);
 
 	switch(pid = fork()) {
-		case -1: error("Fork failed in grandparent");
+		case -1:
+            error("Fork failed in grandparent");
+            break;
 		case  0: /* Parent */
 			printf("Parent (%ld): Creating child...\n", (long) getpid());
 			switch(pid = fork()) {
-				case -1: error("Fork failed in parent");
-				case  0: /* Child */
+				case -1:
+                    error("Fork failed in parent");
+                    break;
+				case  0:; /* Child */
 					pid_t childPid = getpid();
 					printf("Child (%ld): Child is born! Parent is %ld. Sleeping...\n",
 						(long) childPid, (long) getppid());
@@ -42,14 +47,15 @@ main(int argc, char *argv[])
 					printf("Child (%ld): Child awakes again. Parent is now %ld. Exiting\n",
 							(long) childPid, (long) getppid());
 					exit(EXIT_SUCCESS);
-				default: /* Parent */
+				default:; /* Parent */
 					pid_t parentPid = getpid();
 					printf("Parent (%ld): Sleeping...\n", (long) parentPid);
 					sleep(PARENT_SLEEP);
 					printf("Parent (%ld): Awake! Exiting.\n", (long) parentPid);
 					exit(EXIT_SUCCESS);
 			}
-		default: /* Grandparent */
+            break;
+		default:; /* Grandparent */
 			pid_t grandparentPid = getpid();
 			printf("Grandparent (%ld): Sleeping...\n", (long) grandparentPid);
 			sleep(GRANDPARENT_SLEEP);

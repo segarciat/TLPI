@@ -8,8 +8,8 @@ Write a program to verify that when a child's parent terminates, a call to `getp
 The program `init_adopted_zombie.c` is my implementation:
 
 ```bash
-gcc init_adopted_zombie.c
-./a.out
+make
+./init_adopted_zombie
 ```
 
 The output is:

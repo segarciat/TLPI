@@ -18,7 +18,7 @@ LDFLAGS = -L$(TLPI_LIB_PATH)
 LDLIBS = -l:libtlpi.a
 
 # Name of executable to create
-PROGRAM = make_zombie
+PROGRAM = init_adopted_zombie
 OBJECTS = $(PROGRAM).o
 
 # Use implicit C compilation and linking rules to compile

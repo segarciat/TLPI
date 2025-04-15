@@ -1,3 +1,5 @@
+/* Modified by Sergio E. Garcia Tapia for Exercise 26.3 */
+
 /*************************************************************************\
 *                  Copyright (C) Michael Kerrisk, 2023.                   *
 *                                                                         *
@@ -24,6 +26,7 @@
    repeatedly waits on the child until it detects that the child either exited
    normally or was killed by a signal.
 */
+#define _DEFAULT_SOURCE
 #include <sys/wait.h>
 #include "tlpi_hdr.h"
 
@@ -73,7 +76,7 @@ main(int argc, char *argv[])
                 pause();
         exit(EXIT_FAILURE);             /* Not reached, but good practice */
 
-    default:            /* Parent: repeatedly wait on child until it
+    default:;            /* Parent: repeatedly wait on child until it
                            either exits or is terminated by a signal */
 		siginfo_t info;
         for (;;) {

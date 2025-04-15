@@ -1,10 +1,11 @@
-#include <unistd.h> /* _exit(), fork(), wait()  */
-#include <stdio.h> /* printf(), fprintf() */
-#include <stdlib.h> /* exit(), EXIT_SUCCESS */
-#include <sys/wait.h> /* wait() */
+#define _DEFAULT_SOURCE
+#include <unistd.h>     /* _exit(), fork(), wait()  */
+#include <stdio.h>      /* printf(), fprintf() */
+#include <stdlib.h>     /* exit(), EXIT_SUCCESS */
+#include <sys/wait.h>   /* wait() */
 
 int
-main(int argc, char *argv[])
+main()
 {
 	pid_t childPid;
 	int status;
@@ -14,7 +15,7 @@ main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		case 0:
 			printf("Child exiting\n");
-			_exit(-2);
+			_exit(-1);
 		default:
 			if (wait(&status) == -1) {
 				fprintf(stderr, "Parent received -1 from child\nn");
