@@ -1,7 +1,7 @@
 # Exercise 22.3
 
 Section 22.10 stated that accepting signals using `sigwaitinfo()` is faster than the use
-of a signal handler plus `sisuspend()`. The program `signals/sig_speed_sigsuspend.c`,
+of a signal handler plus `sigsuspend()`. The program `signals/sig_speed_sigsuspend.c`,
 supplied in the source code distribution for this book, uses `sigsuspend()` to alternately
 send signals back and forth between a parent and a child process. Time the operation of
 this program to exchange one million signals between the two processes. (The number of signals
@@ -19,7 +19,7 @@ sigset_t blockMask, emptyMask;
 /* Block the signal before forking */
 sigemptyset(&blockMask);
 sigaddset(&blockMask, SIGUSR1); 
-sigpromask(SIG_SETMASK, &blocMask, NULL);
+sigprocmask(SIG_SETMASK, &blockMask, NULL);
 
 /* Unblock signal and suspend until it is received */
 sigemptyset(&emptyset);
@@ -30,8 +30,9 @@ To use `sigwaitinfo()`, we still add `SIGUSR1` to the process signal mask, but
 instead of specifying a new process mask before suspending, we instead specify
 a set of signals to wait for. Notice that the signals do not need to be unblocked;
 they will become pending, at which point `sigwaitinfo()` will return. I omitted
-the second argument by passing `NULL`, since we are not doing anything with it
-in the handler:
+the second argument by passing `NULL`, since we do not care for the information
+about the signal. I also eliminated the signal handler defined in the original
+program, since it is not needed to employ `sigwaitinfo()`.
 
 ```c
 sigset_t blockMask;
@@ -39,7 +40,7 @@ sigset_t blockMask;
 /* Block the signal before forking */
 sigemptyset(&blockMask);
 sigaddset(&blockMask, SIGUSR1); 
-sigpromask(SIG_SETMASK, &blocMask, NULL);
+sigprocmask(SIG_SETMASK, &blockMask, NULL);
 
 /* Suspend until any signals in the blockMask set is pending */
 sigwaitinfo(&blockMask, NULL);

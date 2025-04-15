@@ -33,13 +33,9 @@
        wait for a signal from parent          send a signal to child
    }                                      }
 */
+#define _DEFAULT_SOURCE /* Expose signal interface */
 #include <signal.h>
 #include "tlpi_hdr.h"
-
-static void
-handler(int sig)
-{
-}
 
 #define TESTSIG SIGUSR1
 
@@ -50,13 +46,6 @@ main(int argc, char *argv[])
         usageErr("%s num-sigs\n", argv[0]);
 
     int numSigs = getInt(argv[1], GN_GT_0, "num-sigs");
-
-    struct sigaction sa;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sa.sa_handler = handler;
-    if (sigaction(TESTSIG, &sa, NULL) == -1)
-        errExit("sigaction");
 
     /* Block the signal before fork(), so that the child doesn't manage
        to send it to the parent before the parent is ready to catch it */

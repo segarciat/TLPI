@@ -31,12 +31,14 @@
        wait for a signal from parent          send a signal to child
    }                                      }
 */
+#define _DEFAULT_SOURCE
 #include <signal.h>
 #include "tlpi_hdr.h"
 
 static void
 handler(int sig)
 {
+    (void) sig;
 }
 
 #define TESTSIG SIGUSR1

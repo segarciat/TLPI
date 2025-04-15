@@ -1,8 +1,8 @@
 # Exercise 22.1
 
 Section 22.2 noted that if a stopped process that has established a handler for
-and blocked `SIGCONT` is later resumed as a consequence of receiving a `SIGONCT`,
-the the handler is invoked only when `SIGCONT` is unblocked. Write a program to
+and blocked `SIGCONT` is later resumed as a consequence of receiving a `SIGCONT`,
+then the handler is invoked only when `SIGCONT` is unblocked. Write a program to
 verify this. Recall that a process can be stopped by typing the terminal *suspend*
 character (usually *Control-Z*) and can be sent a `SIGCONT` signal using the command
 *kill -CONT* (or implicitly, using the shell `fg` command).
@@ -12,26 +12,26 @@ character (usually *Control-Z*) and can be sent a `SIGCONT` signal using the com
 My program begins by establishing a signal handler for `SIGCONT` which uses the
 non-async-signal-safe function `printf()` to display `Handled SIGCONT` when the
 `SIGCONT` signal is delivered to the process. It then adds `SIGCONT` to the process
-signal mask and displays a message saying this has occurrs. Then, it begins a 10 second
+signal mask and displays a message saying this has occurred. Then, it begins a 10 second
 countdown, after which it unblocks the signal, prints a message from `main()`, and exits.
 If a `SIGCONT` signal is sent to the process in the period between the blocked and unblocked
-message, the program continues but the handler is not invoked but is added to the set
-of pending signals and is invoked as soon `sigprocmask()` unblocks it (and possibly
+message, the program continues but the handler is not invoked, and the `SIGCONT` signal
+remains pending. The handler is invoked as soon `sigprocmask()` unblocks it (and possibly
 before it even returns).
 
 To see this in action, take these steps:
 
-1. Compile with `gcc -o verify_sigcont verify_sigcont.c`.
+1. Compile and build the executable with `make`.
 
-2. Run `./verify_sigcont`. Note that it displays the process ID, so note it down.
+2. Run `./verify_sigcont`. Take note of the process ID displayed.
 
-3. After seeing the message `Blcoking and handling SIGCONT`, press *Control+Z* to send a
-job-control *stop* signal before the counter reaches 0. This stops (suspends) the process
-running in the foreground (should be `verify_sigcont`).
+3. After seeing the message `Blocking and handling SIGCONT`, press *Control+Z* to send a
+job-control *stop* signal (`SIGTSTP`) before the counter reaches 0. This stops (suspends)
+the process running in the foreground (should be `verify_sigcont`).
 
 4. In the same or a different terminal, use the process ID you noted down (or use the `ps xa`
 command to find the PID for the process corresponding to `verify_sigcont`) and run
-`kill -s SIGCONT <PID>`, where you replaced `<PID>` with the process ID.
+`kill -s SIGCONT <PID>`, where you replace `<PID>` with the process ID.
 
 5. The count will continue, but when the counter reaches 0, the `Handled SIGCONT` message
 will display from the handler because `SIGCONT` has been removed from the process signal mask.

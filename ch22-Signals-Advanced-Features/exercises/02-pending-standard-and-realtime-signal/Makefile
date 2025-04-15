@@ -18,7 +18,7 @@ LDFLAGS = -L$(TLPI_LIB_PATH)
 LDLIBS = -l:libtlpi.a
 
 # Name of executable to create
-PROGRAM =
+PROGRAM = pending_std_rt_signals
 OBJECTS = $(PROGRAM).o
 
 # Use implicit C compilation and linking rules to compile
